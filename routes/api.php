@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\StudentController;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,4 +16,8 @@ Route::get('/test',function(){
 
 Route::get('/student',[StudentController::class,'List']);
 
-Route::post('add-student',[StudentController::class,'AddStudent']);
+Route::post('create',[StudentController::class,'AddStudent']);
+
+Route::put('/update',[StudentController::class,'updateStudent']);
+
+Route::delete('/delete/{id}',[StudentController::class,"deleteStudent"]);
