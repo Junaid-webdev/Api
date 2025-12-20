@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Teacher extends Model
 {
     public $timestamps = false;
-protected $fillable = ['name', 'subject', 'experience','email'];
+protected $fillable = ['name', 'subject', 'DOB','address','number'];
     
 }

@@ -2,79 +2,90 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Student;
 use Illuminate\Support\Facades\Validator;
 
 class StudentController extends Controller
 {
-    function List()
+    // List students
+    public function List()
     {
         return Student::all();
     }
 
-
-    function AddStudent(Request $request)
-     {
-            $rules = array(
-                "name" => "required|min:2|max:10",
-                "email" => "email|required",
-                "country" =>"required"
-            );
-            $validation = Validator::make($request->all(), $rules);
-
-            if ($validation->fails()) {
-                return $validation->errors();
-            } else {
-                $student = new Student();
-                $student->name = $request->name;
-                $student->email = $request->email;
-                $student->country = $request->country;
-                if ($student->save()) {
-                    return ["result" => "Student Added"];
-                } else {
-                    return ["result" => "opration failed"];
-                }
-            }
-        }
-    }
-
-    // Update student //
-
-    function updateStudent(Request $request)
+    // Add student
+    public function AddStudent(Request $request)
     {
-        $student =  Student::find($request->id);
+        $rules = [
+            "name" => "required|min:2|max:50",
+            "class_id" => "required|integer",
+            "dob" => "required|date",
+            "father_name" => "required",
+            "mother_name" => "nullable",
+            "number" => "required",
+            "address" => "required",
+        ];
+
+        $validation = Validator::make($request->all(), $rules);
+
+        if ($validation->fails()) {
+            return response()->json($validation->errors(), 422);
+        }
+
+        $student = new Student();
         $student->name = $request->name;
-        $student->email = $request->email;
-        $student->country = $request->country;
+        $student->class_id = $request->class_id;
+        $student->dob = $request->dob;
+        $student->father_name = $request->father_name;
+        $student->mother_name = $request->mother_name;
+        $student->number = $request->number;
+        $student->address = $request->address;
+        $student->save();
 
-        if ($student->save()) {
-            return ["result" => "Student Updated"];
-        } else {
-            return ["result" => "opration failed"];
-        }
+        return ["result" => "Student Added Successfully"];
     }
 
-    // delete student //
-
-    function deleteStudent($id)
+    // Update student
+    public function updateStudent(Request $request)
     {
-        $student = Student::destroy($id);
-        if ($student) {
-            return ["result" => "student recorded deleted successfully"];
-        } else {
-            return ["result" => "opration failed"];
+        $student = Student::find($request->id);
+
+        if (!$student) {
+            return ["result" => "Student not found"];
         }
+
+        $student->name = $request->name;
+        $student->class_id = $request->class_id;
+        $student->dob = $request->dob;
+        $student->father_name = $request->father_name;
+        $student->mother_name = $request->mother_name;
+        $student->number = $request->number;
+        $student->address = $request->address;
+        $student->save();
+
+        return ["result" => "Student Updated Successfully"];
     }
 
-    function searchStudent($name)
+    // Delete student
+    public function deleteStudent($id)
+    {
+        if (Student::destroy($id)) {
+            return ["result" => "Student deleted successfully"];
+        }
+
+        return ["result" => "Operation failed"];
+    }
+
+    // Search student
+    public function searchStudent($name)
     {
         $student = Student::where('name', 'like', "%$name%")->get();
-        if ($student) {
-            return ['result' => $student];
-        } else {
-            return ["result" => "no record found"];
-        }
-    }
 
+        if ($student->count() > 0) {
+            return ['result' => $student];
+        }
+
+        return ["result" => "No record found"];
+    }
+}
